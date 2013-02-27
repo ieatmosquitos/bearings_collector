@@ -1,0 +1,21 @@
+<package>
+  <description brief="bearing_collector">
+
+     bearing_collector
+
+  </description>
+  <author>Fabrizio</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/bearing_collector</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="sensor_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="std_msgs"/>
+  
+</package>
+
+
