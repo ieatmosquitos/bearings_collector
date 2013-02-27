@@ -18,5 +18,5 @@ Reads images from the /cam_stream topic and displays them on the screen
 [Joy2cmd_vel]
 User interface that allows to drive the robot by the use of a joypad. This publishes on the /cmd_vel topic.
 Its peculiarity is that it can be customized (I.E. select which axes/button does what) by editing a simple text file.
-This is very useful if your joypad has a broken lever :D
-If you want to get infos about your joypad's axes/button numeration, you may find useful a tool named "jstest".
+This is very nice feature if your joypad has a broken lever :D
+If you want to get infos about your joypad's axes/buttons numeration, you may find useful a tool named "jstest".
