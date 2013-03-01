@@ -232,7 +232,7 @@ void cameraCallback(const sensor_msgs::ImageConstPtr& img){
   tools::getCentroids(&purged_blobs, &centroids);
 
   // prepare the image showing the blobs
-  cv::Mat blobs_image(image.rows, image.cols, CV_8UC3, cv::Scalar(0,0,0));
+  cv::Mat blobs_image(image.rows, image.cols, CV_8UC3, cv::Scalar(33,33,33));
   tools::blobsPainter(&blobs_image, &purged_blobs);
   
   // save the original image
