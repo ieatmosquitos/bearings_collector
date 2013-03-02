@@ -14,6 +14,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <string>
+#include "FileReader.h"
 // #include <unistd.h>
 
 #define GAMMA 10		// NO MORE USED
@@ -23,20 +25,20 @@
 
 #define BLUR_SIZE 3
 
+// GLOBAL VARIABLES:
+
 // these values determine which color is recognized as a possible landmark
-#define MIN_HUE 155
-#define MAX_HUE 175
-#define MIN_SAT 125
-#define MAX_SAT 220
-#define MIN_VAL 80
-#define MAX_VAL 130
+float min_hue;
+float max_hue;
+float min_sat;
+float max_sat;
+float min_val;
+float max_val;
 
-// these are the distance/angle that trigger the darta acquisition
-#define DISTANCE_TRIGGER 0.10
-#define ANGLE_TRIGGER 0.15
+// these are the distance/angle that trigger the data acquisition
+float distance_trigger;
+float angle_trigger;
 
-
-// global variables
 char * odom_topic_name;
 char * image_window_name;
 char * blobs_window_name;
@@ -102,6 +104,76 @@ float degreesToRadians(float degs){
   return (degs/180)*M_PI;
 }
 
+void configure(float dist_trig, float ang_trig, float min_h, float max_h, float min_s, float max_s, float min_v, float max_v){
+  distance_trigger = dist_trig;
+  angle_trigger = ang_trig;
+  min_hue = min_h;
+  max_hue = max_h;
+  min_sat = min_s;
+  max_sat = max_s;
+  min_val = min_v;
+  max_val = max_v;
+}
+
+void configureFromFile(std::string filename){
+  // set default values
+  float min_h = 155;
+  float max_h = 175;
+  float min_s = 125;
+  float max_s = 220;
+  float min_v = 80;
+  float max_v = 130;
+  float dist_trig = 0.1;
+  float ang_trig = 0.15;
+  
+  FileReader fr(filename);
+  if(!fr.is_open()){
+    std::cout << "cannot open configuration file, using default HSV and movements thresholds" << std::endl;
+    configure(dist_trig, ang_trig, min_h, max_h, min_s, max_s, min_v, max_v);
+    return;
+  }
+  
+  // if a config file is present...
+  std::vector<std::string> textline;
+  fr.readLine(&textline);
+  while(fr.good()){
+    if(textline.size() > 1){
+      if((textline[0].compare(std::string("min_hue"))) == 0){	// compare returns 0 if the two strings are equal
+	min_h = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("max_hue"))) == 0){
+	max_h = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("min_satutarion"))) == 0){
+	min_s = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("max_satutarion"))) == 0){
+	max_s = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("min_value"))) == 0){
+	min_v = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("max_value"))) == 0){
+	max_v = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("distance_trigger"))) == 0){
+	dist_trig = atof(textline[1].c_str());
+      }
+      if((textline[0].compare(std::string("angle_trigger"))) == 0){
+	ang_trig = atof(textline[1].c_str());
+      }
+    }
+    textline.clear();
+    fr.readLine(&textline);
+  }
+  
+  configure(dist_trig, ang_trig, min_h, max_h, min_s, max_s, min_v, max_v);
+  std::cout << "set H: [" << min_hue << ", " << max_hue << "]" << std::endl;
+  std::cout << "set S: [" << min_sat << ", " << max_sat << "]" << std::endl;
+  std::cout << "set V: [" << min_val << ", " << max_val << "]" << std::endl;
+  std::cout << "set movement triggers:\tdistance = " << distance_trigger << "\tangle = " << angle_trigger << std::endl;
+}
+
 void init(int argc, char ** argv){
   // initialize variables
   odom_topic_name = "/pose";
@@ -116,7 +188,10 @@ void init(int argc, char ** argv){
   moved = 0;
   capture_trigger = false;
   image_number = 0;
-
+  
+  // load capturing and pixel selecting configurations
+  configureFromFile(std::string("collector.conf"));
+  
   // load the filtering image
   filter_image = cv::imread("filter.png",0);
   if(filter_image.data==NULL){
@@ -181,7 +256,7 @@ void odomCallback(const nav_msgs::Odometry::ConstPtr& odom){
   //	std::cout << "angle: " << last_theta << '\n';
   //	std::cout << "relative angle: " << tools::computeAnglesDifference(angle, last_angle) << '\n';
 
-  if ((capture_trigger == true) || (moved > DISTANCE_TRIGGER) || (tools::computeAnglesDifference(last_theta, last_captured_theta) > ANGLE_TRIGGER)){	// the condition on capture trigger is to update the position in the case that another odometry message arrives before the next /cam_stream message
+  if ((capture_trigger == true) || (moved > distance_trigger) || (tools::computeAnglesDifference(last_theta, last_captured_theta) > angle_trigger)){	// the condition on capture trigger is to update the position in the case that another odometry message arrives before the next /cam_stream message
     moved = 0;
     last_captured_x = last_x;
     last_captured_y = last_y;
@@ -219,7 +294,7 @@ void cameraCallback(const sensor_msgs::ImageConstPtr& img){
   cv::cvtColor(*blurred_image,hsv_image, CV_BGR2HSV);
 	
   // get filter undesired pixels
-  cv::Mat * selected_pixels = tools::selectPixels_HSV(&hsv_image, &filter_image, MIN_HUE, MAX_HUE, MIN_SAT, MAX_SAT, MIN_VAL, MAX_VAL);	
+  cv::Mat * selected_pixels = tools::selectPixels_HSV(&hsv_image, &filter_image, min_hue, max_hue, min_sat, max_sat, min_val, max_val);	
   
   // extract the blobs
   std::vector<Blob*> blobs;

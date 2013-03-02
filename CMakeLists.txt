@@ -33,7 +33,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(BearingCollector src/bearingCollector.cpp)
+rosbuild_add_executable(BearingCollector src/bearingCollector.cpp src/FileReader.cpp)
 rosbuild_add_executable(CameraStream src/cameraStream.cpp)
 rosbuild_add_executable(ImageReceiver src/imageReceiver.cpp)
 add_executable(ConvertOutput src/convert_output.cpp src/FileReader.cpp)

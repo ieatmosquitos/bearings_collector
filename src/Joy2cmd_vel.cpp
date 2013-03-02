@@ -78,19 +78,19 @@ void configFromFile(std::string filename){
       if((textline[0].compare(std::string("accelerate"))) == 0){	// compare returns 0 if the two strings are equal
 	acc = atoi(textline[1].c_str());
       }
-      if((textline[0].compare(std::string("rotate"))) == 0){	// compare returns 0 if the two strings are equal
+      if((textline[0].compare(std::string("rotate"))) == 0){
 	rot = atoi(textline[1].c_str());
       }
-      if((textline[0].compare(std::string("rear"))) == 0){	// compare returns 0 if the two strings are equal
+      if((textline[0].compare(std::string("rear"))) == 0){
 	setrear = atoi(textline[1].c_str());
       }
-      if((textline[0].compare(std::string("recalibrate"))) == 0){	// compare returns 0 if the two strings are equal
+      if((textline[0].compare(std::string("recalibrate"))) == 0){
 	recalib = atoi(textline[1].c_str());
       }
-      if((textline[0].compare(std::string("quit"))) == 0){	// compare returns 0 if the two strings are equal
+      if((textline[0].compare(std::string("quit"))) == 0){
 	quit = atoi(textline[1].c_str());
       }
-      if((textline[0].compare(std::string("handbrake"))) == 0){	// compare returns 0 if the two strings are equal
+      if((textline[0].compare(std::string("handbrake"))) == 0){
 	handb = atoi(textline[1].c_str());
       }
     }
@@ -119,7 +119,7 @@ void init(){
         buttons.push_back(0);
     }
     
-    configFromFile(std::string("joyconf.cnf"));
+    configFromFile(std::string("joy.conf"));
 }
 
 
