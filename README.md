@@ -13,6 +13,7 @@ The output is a directory containing:
     • the corresponding filtered images with a cross on each detected landmark
     • images showing the blobs associated to each captured image
     • a text file associating each image with the corresponding robot pose and the list of the bearings detected from that pose
+Configurations for the HSV parametres and the triggering distance/angle are read from the "collector.conf" file.
 
 [CameraStream]
 Captures images from a camera and publishes them to the /cam_stream topic
@@ -33,6 +34,7 @@ Commands:
 	• The RECALIB button stores the current position of the axes as the rest position.
 	• The HANDBREAK button prevents any movements.
 	• The QUIT button quits the program.
+Axes/button configurations are read from the "joy.conf" file in the directory where you run the program.
 
 [ConvertOutput]
 This is not a ROS node, but it is here because it is used for transforming the output of this program in a format that is readable for my other project "BearingSlam".
