@@ -10,9 +10,15 @@
 #define BLUE_CHANNEL 0
 #endif
 
+#ifndef GREEN_CHANNEL
+#define GREEN_CHANNEL 1
+#endif
+
 #ifndef RED_CHANNEL
 #define RED_CHANNEL 2
 #endif
+
+#define CROSS_CHANNEL GREEN_CHANNEL // change this to change the color of the crosses drawn over the centroids
 
 // Structure created to identify an <x,y> couple, used for storing pixels positions
 struct Coordinate{
@@ -512,30 +518,39 @@ public:
    */
   static void drawCross(cv::Mat * image, FloatCouple * fc, int crossSize){
     Coordinate c((int)fc->x, (int)fc->y);
-
-    image->at<cv::Vec3b>(c.y, c.x)[RED_CHANNEL]=(uchar)255;
+    
+    cv::Vec3b black_pix(0,0,0);
+    // image->at<cv::Vec3b>(c.y, c.x)[RED_CHANNEL]=(uchar)0;
+    // image->at<cv::Vec3b>(c.y, c.x)[BLUE_CHANNEL]=(uchar)0;
+    // image->at<cv::Vec3b>(c.y, c.x)[GREEN_CHANNEL]=(uchar)0;
+    image->at<cv::Vec3b>(c.y,c.x)=black_pix;
+    image->at<cv::Vec3b>(c.y, c.x)[CROSS_CHANNEL]=(uchar)255;
     for(int offset = 1; offset<crossSize; offset++){
       Coordinate point(c.x-offset, c.y-offset);
       if((point.x>=0) && (point.x<image->cols) && (point.y>=0) && (point.y<image->rows)){
-	image->at<cv::Vec3b>(point.y, point.x)[RED_CHANNEL]=(uchar)255;
+	image->at<cv::Vec3b>(point.y, point.x)=black_pix;
+	image->at<cv::Vec3b>(point.y, point.x)[CROSS_CHANNEL]=(uchar)255;
       }
 
       point.x = c.x+offset;
       point.y = c.y-offset;
       if((point.x>=0) && (point.x<image->cols) && (point.y>=0) && (point.y<image->rows)){
-	image->at<cv::Vec3b>(point.y, point.x)[RED_CHANNEL]=(uchar)255;
+	image->at<cv::Vec3b>(point.y, point.x)=black_pix;
+	image->at<cv::Vec3b>(point.y, point.x)[CROSS_CHANNEL]=(uchar)255;
       }
 
       point.x = c.x-offset;
       point.y = c.y+offset;
       if((point.x>=0) && (point.x<image->cols) && (point.y>=0) && (point.y<image->rows)){
-	image->at<cv::Vec3b>(point.y, point.x)[RED_CHANNEL]=(uchar)255;
+	image->at<cv::Vec3b>(point.y, point.x)=black_pix;
+	image->at<cv::Vec3b>(point.y, point.x)[CROSS_CHANNEL]=(uchar)255;
       }
 
       point.x = c.x+offset;
       point.y = c.y+offset;
       if((point.x>=0) && (point.x<image->cols) && (point.y>=0) && (point.y<image->rows)){
-	image->at<cv::Vec3b>(point.y, point.x)[RED_CHANNEL]=(uchar)255;
+	image->at<cv::Vec3b>(point.y, point.x)=black_pix;
+	image->at<cv::Vec3b>(point.y, point.x)[CROSS_CHANNEL]=(uchar)255;
       }
     }
   }
