@@ -1,5 +1,12 @@
 A set of ROS nodes to gather landmarks bearings from an omnicam while moving a robot.
 
+installation:
+git-clone it to your ros workspace
+rospack profile
+rosmake bearings_collector
+
+You will need OpenCV and Eigen libraries installed.
+
 [BearingCollector]
 The actual gathering node.
 Reads images from the /cam_stream topic and robotposes from the /pose topic.
